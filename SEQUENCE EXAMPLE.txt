@@ -1,0 +1,46 @@
+//SEQUENCE EX
+module seq_ex;
+  
+  bit clk,a,b;
+  
+  always #5 clk = ~clk;
+  
+  initial begin
+    a = 1; b = 1;
+    #15 a = 0; b = 0;
+    #10 a = 1; b = 0;
+    #10 a = 0; b = 0;
+    #10 a = 1; b = 1;
+    #10;
+    $finish;
+  end
+  
+  //timing relationship
+  sequence seq_1;
+    @(posedge clk) a ##2 b;
+  endsequence
+  
+  //logical relationship
+  sequence seq_2;
+    @(posedge clk) a||b;
+  endsequence
+  
+  //property definition
+  sequence seq_3;
+    a == 1;
+  endsequence
+  property ppt;
+    @(posedge clk)seq_3;
+  endproperty
+  
+  //calling property
+  a_1: assert property(seq_1);
+    a_2: assert property(seq_2);
+      a_3: assert property(ppt);
+        
+  initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars;
+  end
+        
+        endmodule

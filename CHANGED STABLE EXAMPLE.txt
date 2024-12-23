@@ -1,0 +1,33 @@
+//THE SIGNAL SHOULD CHANGE ON EVERY POSEDGE OF CLK AND IT SHOULD BE STABLE DURING NEGEDGE OF CLOCK
+
+module ass;
+  
+  bit clk,a;
+  always #5 clk = ~clk;
+  
+  initial begin
+    a = 1;
+    #25 a = 0;
+    #10 a = 1;
+    #10 a = 1;
+    #10;
+    $finish;
+  end
+  
+  sequence seq_1;
+    @(posedge clk) $changed(a);
+  endsequence
+  
+//   sequuence seq_2;
+//   	@(negedge clk) $stable(a);
+//   endsequence
+  
+  a_1: assert property(seq_1);
+    a_2: assert property(@(negedge clk) $stable(a));
+      
+      initial begin
+        $dumpfile("dump.vcd");
+        $dumpvars;
+      end
+      
+      endmodule
